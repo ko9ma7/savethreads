@@ -5,13 +5,369 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SaveThreads - 스레드(Threads) 동영상 다운로드</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg-main: #000000;
+      --bg-card: #161618;
+      --bg-input: #1e1e22;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --border-subtle: #27272a;
+      --blue-primary: #0070f3;
+      --blue-hover: #005cc5;
+      --badge-bg: #27272a;
+    }
+
+    [data-theme="light"] {
+      --bg-main: #fafafa;
+      --bg-card: #ffffff;
+      --bg-input: #f4f4f5;
+      --text-primary: #111111;
+      --text-secondary: #666666;
+      --border-subtle: #e4e4e7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .navbar {
+      padding: 18px 0;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.25rem;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-pill {
+      background-color: #0d2847;
+      color: #58a6ff;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 8px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 56px 0 32px;
+    }
+
+    .hero h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 36px;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .input-box {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 0 16px;
+      height: 54px;
+    }
+
+    .input-box:focus-within {
+      border-color: var(--blue-primary);
+    }
+
+    .input-box input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 0.98rem;
+      padding-right: 28px;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.35rem;
+      cursor: pointer;
+    }
+
+    .download-submit-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 0 24px;
+      height: 54px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .download-submit-btn:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .download-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .status-message {
+      max-width: 680px;
+      margin: 18px auto 0;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .status-message.error {
+      border-color: #7f1d1d;
+      background-color: #2a1215;
+      color: #f87171;
+    }
+
+    .result-area {
+      max-width: 680px;
+      margin: 28px auto 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .author-card {
+      width: 100%;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .author-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .author-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #27272a;
+    }
+
+    .author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .author-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .author-handle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .author-caption {
+      font-size: 0.95rem;
+      color: #e4e4e7;
+      white-space: pre-line;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .media-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .media-card {
+      width: 100%;
+      max-width: 360px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .media-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .media-type-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .media-quality-badge {
+      background-color: var(--badge-bg);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .media-frame {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .media-frame video,
+    .media-frame img {
+      width: 100%;
+      max-height: 460px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .media-download-btn {
+      width: 100%;
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .media-download-btn:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      .search-bar { flex-direction: column; }
+      .media-card { max-width: 100%; }
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
     <div class="container nav-container">
       <a href="./" class="logo">
-        <!-- SaveThreads 로고 아이콘 -->
         <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c3.78 0 7.07-2.1 8.76-5.23" stroke-linecap="round"/>
           <path d="M16.5 12c0-2.48-2.02-4.5-4.5-4.5S7.5 9.52 7.5 12s2.02 4.5 4.5 4.5c1.66 0 3.11-.9 3.89-2.25" stroke-linecap="round"/>
@@ -20,25 +376,19 @@
         <span>SaveThreads</span>
       </a>
       <nav class="nav-right">
-        <button type="button" class="icon-btn" title="언어">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
-        </button>
         <button type="button" id="theme-toggle" class="icon-btn" title="테마 전환">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </button>
-        <a href="./" class="nav-pill active">홈</a>
-        <a href="#how-to" class="nav-link">소개</a>
-        <a href="#faq" class="nav-link">문의</a>
+        <a href="./" class="nav-pill">홈</a>
+        <a href="#about" class="nav-link">소개</a>
+        <a href="#contact" class="nav-link">문의</a>
       </nav>
     </div>
   </header>
 
-  <main class="container main-content">
+  <main class="container">
     <section class="hero">
       <h1>스레드(Threads)<br>동영상 다운로드</h1>
       <p class="subtitle">Threads의 이미지와 동영상을 원본 품질로 다운로드하세요</p>
@@ -48,7 +398,7 @@
           <input
             type="url"
             id="thread-url"
-            placeholder="https://www.threads.com/@username/post/..."
+            placeholder="https://www.threads.com/@choi.openai/post/..."
             required
             autocomplete="off"
           >
@@ -65,12 +415,10 @@
       <div id="status-message" class="status-message hidden"></div>
     </section>
 
-    <!-- 1번 이미지와 동일한 결과 출력 레이아웃 -->
     <section id="result-section" class="result-area hidden">
-      <!-- 작성자 및 본문 카드 -->
       <div class="author-card">
         <div class="author-header">
-          <img id="author-avatar" class="author-avatar" src="" alt="avatar">
+          <img id="author-avatar" class="author-avatar" src="" alt="avatar" referrerpolicy="no-referrer">
           <div class="author-meta">
             <strong id="author-name" class="author-name"></strong>
             <span id="author-handle" class="author-handle"></span>
@@ -79,11 +427,368 @@
         <p id="post-caption" class="author-caption"></p>
       </div>
 
-      <!-- 미디어 카드 리스트 -->
       <div id="media-list" class="media-list"></div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    const form = document.getElementById("download-form");
+    const urlInput = document.getElementById("thread-url");
+    const clearBtn = document.getElementById("clear-btn");
+    const submitBtn = document.getElementById("submit-btn");
+    const statusMessage = document.getElementById("status-message");
+    const resultSection = document.getElementById("result-section");
+
+    const authorAvatar = document.getElementById("author-avatar");
+    const authorName = document.getElementById("author-name");
+    const authorHandle = document.getElementById("author-handle");
+    const postCaption = document.getElementById("post-caption");
+    const mediaList = document.getElementById("media-list");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    themeToggle.addEventListener("click", () => {
+      const html = document.documentElement;
+      html.setAttribute("data-theme", html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+
+    urlInput.addEventListener("input", () => {
+      clearBtn.classList.toggle("hidden", !urlInput.value.trim());
+    });
+
+    clearBtn.addEventListener("click", () => {
+      urlInput.value = "";
+      clearBtn.classList.add("hidden");
+      urlInput.focus();
+    });
+
+    // Threads 주소에서 유저 핸들과 포스트 코드 추출 (threads.com 및 threads.net 모두 호환)
+    function parseInputUrl(rawUrl) {
+      try {
+        const u = new URL(rawUrl.trim());
+        if (!/^(www\.)?threads\.(net|com)$/i.test(u.hostname)) return null;
+        const m = u.pathname.match(/\/(?:@([\w.]+)\/post|t)\/([a-zA-Z0-9_-]+)/);
+        if (!m) return null;
+        const handle = m[1] || "threads_user";
+        const shortcode = m[2];
+        return {
+          handle,
+          shortcode,
+          canonicalUrl: `https://www.threads.net/@${handle}/post/${shortcode}`,
+          embedUrl: `https://www.threads.net/@${handle}/post/${shortcode}/embed`
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function showStatus(msg, isError = false) {
+      statusMessage.textContent = msg;
+      statusMessage.className = `status-message ${isError ? "error" : ""}`;
+    }
+
+    function hideStatus() {
+      statusMessage.className = "status-message hidden";
+    }
+
+    // 이스케이프된 URL 및 유니코드 문자열 복원 (\" -> ", \/ -> /, \u0026 -> &)
+    function cleanEscapedText(raw) {
+      if (!raw) return "";
+      let s = raw
+        .replace(/\\"/g, '"')
+        .replace(/\\\//g, "/")
+        .replace(/\\u0026/g, "&")
+        .replace(/\\u003C/g, "<")
+        .replace(/\\u003E/g, ">")
+        .replace(/\\u00253D/g, "%3D")
+        .replace(/&amp;/g, "&");
+      try {
+        s = s.replace(/\\u([\dA-Fa-f]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+      } catch {}
+      return s;
+    }
+
+    // 다중 프록시를 순회하며 Threads /embed 페이지의 SSR HTML 획득
+    async function fetchThreadsPayload(urlInfo) {
+      const endpoints = [
+        `https://api.allorigins.win/get?url=${encodeURIComponent(urlInfo.embedUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlInfo.embedUrl)}`,
+        `https://corsproxy.io/?url=${encodeURIComponent(urlInfo.embedUrl)}`,
+        `https://api.allorigins.win/get?url=${encodeURIComponent(urlInfo.canonicalUrl)}`
+      ];
+
+      for (const proxyUrl of endpoints) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 10000);
+          const res = await fetch(proxyUrl, { signal: ctrl.signal });
+          clearTimeout(timer);
+
+          if (!res.ok) continue;
+
+          let html = "";
+          if (proxyUrl.includes("allorigins.win/get")) {
+            const json = await res.json();
+            html = json.contents || "";
+          } else {
+            html = await res.text();
+          }
+
+          // 유효한 미디어/임베드 데이터가 들어있는지 확인
+          if (
+            html &&
+            (html.includes("SinglePostMedia") ||
+              html.includes("video_versions") ||
+              html.includes("cdninstagram.com") ||
+              html.includes("fbcdn.net"))
+          ) {
+            return html;
+          }
+        } catch {
+          // 다음 프록시로 폴백
+        }
+      }
+      throw new Error("Threads 서버에서 데이터를 응답하지 않았습니다. 잠시 후 다시 시도해 주세요.");
+    }
+
+    // /embed DOM 및 Relay 이스케이프 JSON 통합 파서
+    function extractDataFromHtml(html, urlInfo) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+
+      let displayName = urlInfo.handle.toUpperCase();
+      let avatar = "";
+      let caption = "";
+      const mediaItems = [];
+      const seenUrls = new Set();
+
+      // 1. /embed 전용 DOM 클래스에서 본문/작성자/비디오 직접 추출
+      const embedCaptionEl =
+        doc.querySelector(".SinglePostCaption .BodyText") ||
+        doc.querySelector(".SinglePostCaption") ||
+        doc.querySelector('[data-pressable-container="true"]');
+      if (embedCaptionEl && embedCaptionEl.textContent.trim()) {
+        caption = embedCaptionEl.textContent.trim();
+      }
+
+      const embedUsernameEl = doc.querySelector(".SinglePostHeaderUsername");
+      if (embedUsernameEl && embedUsernameEl.textContent.trim()) {
+        displayName = embedUsernameEl.textContent.trim();
+      }
+
+      const embedAvatarEl = doc.querySelector(".SinglePostHeaderAvatar img, img.Avatar");
+      if (embedAvatarEl?.getAttribute("src")) {
+        avatar = cleanEscapedText(embedAvatarEl.getAttribute("src"));
+      }
+
+      // /embed 내 <video> 태그 직접 탐색
+      doc.querySelectorAll("video, video source").forEach((el) => {
+        const src = el.getAttribute("src");
+        if (src && !seenUrls.has(src)) {
+          const cleanUrl = cleanEscapedText(src);
+          seenUrls.add(cleanUrl);
+          mediaItems.push({
+            type: "video",
+            quality: "FHD",
+            url: cleanUrl,
+            thumb: el.getAttribute("poster") ? cleanEscapedText(el.getAttribute("poster")) : ""
+          });
+        }
+      });
+
+      // 2. HTML 내 이스케이프된 Relay JSON (video_versions / caption / profile_pic_url) 정규식 파싱
+      const normalizedHtml = html.replace(/\\"/g, '"').replace(/\\\//g, "/");
+
+      if (!caption) {
+        const capMatch = normalizedHtml.match(/"caption":\s*\{"text":"([^"]+)"/);
+        if (capMatch && capMatch[1]) {
+          caption = cleanEscapedText(capMatch[1]);
+        } else {
+          const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute("content");
+          if (ogDesc) caption = cleanEscapedText(ogDesc);
+        }
+      }
+
+      if (!avatar) {
+        const picMatch = normalizedHtml.match(/"profile_pic_url":"(https:[^"]+)"/);
+        if (picMatch && picMatch[1]) {
+          avatar = cleanEscapedText(picMatch[1]);
+        }
+      }
+
+      // video_versions 배열 내부의 실제 MP4 CDN 주소 추출
+      const videoRegex = /"video_versions":\s*\[\s*\{[^]]*?"url":"(https:\/\/[^"]+?\.mp4[^"]*)"/g;
+      let vMatch;
+      while ((vMatch = videoRegex.exec(normalizedHtml)) !== null) {
+        const vUrl = cleanEscapedText(vMatch[1]);
+        if (!seenUrls.has(vUrl)) {
+          seenUrls.add(vUrl);
+          mediaItems.push({
+            type: "video",
+            quality: "FHD",
+            url: vUrl,
+            thumb: avatar
+          });
+        }
+      }
+
+      // 일반 MP4 CDN 링크 폴백 탐색
+      if (mediaItems.length === 0) {
+        const rawMp4Regex = /https:\/\/[^"'\s\\]+\.mp4\?[^"'\s\\]+/g;
+        const mp4Matches = normalizedHtml.match(rawMp4Regex) || [];
+        mp4Matches.forEach((rawUrl) => {
+          const cleanUrl = cleanEscapedText(rawUrl);
+          if (!seenUrls.has(cleanUrl)) {
+            seenUrls.add(cleanUrl);
+            mediaItems.push({
+              type: "video",
+              quality: "FHD",
+              url: cleanUrl,
+              thumb: avatar
+            });
+          }
+        });
+      }
+
+      // 3. 동영상이 없을 경우 본문 이미지 추출
+      if (mediaItems.length === 0) {
+        doc.querySelectorAll(".SinglePostMedia img").forEach((img) => {
+          const src = img.getAttribute("src");
+          if (src && !seenUrls.has(src)) {
+            const cleanUrl = cleanEscapedText(src);
+            seenUrls.add(cleanUrl);
+            mediaItems.push({
+              type: "image",
+              quality: "HD",
+              url: cleanUrl,
+              thumb: cleanUrl
+            });
+          }
+        });
+
+        const ogImg = doc.querySelector('meta[property="og:image"]')?.getAttribute("content");
+        if (mediaItems.length === 0 && ogImg) {
+          mediaItems.push({
+            type: "image",
+            quality: "HD",
+            url: cleanEscapedText(ogImg),
+            thumb: cleanEscapedText(ogImg)
+          });
+        }
+      }
+
+      if (mediaItems.length === 0) {
+        throw new Error("미디어 URL을 찾지 못했습니다. 비공개 계정이거나 삭제된 게시물일 수 있습니다.");
+      }
+
+      return {
+        author: {
+          name: displayName,
+          handle: `@${urlInfo.handle}`,
+          avatar: avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=27272a&color=fff`
+        },
+        caption: caption || "본문 텍스트가 없는 게시물입니다.",
+        media: mediaItems
+      };
+    }
+
+    function renderResult(data) {
+      authorAvatar.src = data.author.avatar;
+      authorAvatar.onerror = () => {
+        authorAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.author.name)}&background=27272a&color=fff`;
+      };
+      authorName.textContent = data.author.name;
+      authorHandle.textContent = data.author.handle;
+      postCaption.textContent = data.caption;
+
+      mediaList.innerHTML = "";
+
+      data.media.forEach((item, idx) => {
+        const isVideo = item.type === "video";
+        const typeLabel = isVideo ? "동영상" : "이미지";
+        const ext = isVideo ? "mp4" : "jpg";
+
+        const card = document.createElement("div");
+        card.className = "media-card";
+        card.innerHTML = `
+          <div class="media-card-header">
+            <span class="media-type-label">${typeLabel}</span>
+            <span class="media-quality-badge">${item.quality}</span>
+          </div>
+          <div class="media-frame">
+            ${
+              isVideo
+                ? `<video src="${item.url}" controls playsinline preload="metadata" referrerpolicy="no-referrer"></video>`
+                : `<img src="${item.url}" alt="Threads Media" referrerpolicy="no-referrer">`
+            }
+          </div>
+          <button type="button" class="media-download-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>${typeLabel} 다운로드</span>
+          </button>
+        `;
+
+        const dlBtn = card.querySelector(".media-download-btn");
+        dlBtn.addEventListener("click", () => {
+          forceDownload(item.url, `savethreads_${Date.now()}_${idx + 1}.${ext}`, dlBtn);
+        });
+
+        mediaList.appendChild(card);
+      });
+
+      resultSection.classList.remove("hidden");
+    }
+
+    async function forceDownload(fileUrl, fileName, btn) {
+      const prevHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = "파일 저장 준비 중...";
+
+      try {
+        const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(fileUrl)}`);
+        if (!res.ok) throw new Error("Proxy error");
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+      } catch {
+        window.open(fileUrl, "_blank", "noopener,noreferrer");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = prevHtml;
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const urlInfo = parseInputUrl(urlInput.value);
+
+      resultSection.classList.add("hidden");
+
+      if (!urlInfo) {
+        showStatus("올바른 Threads 링크를 입력해 주세요. (예: https://www.threads.com/@user/post/...)", true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      showStatus("Threads 임베드 서버에서 원본 동영상과 본문을 가져오는 중입니다...");
+
+      try {
+        const rawHtml = await fetchThreadsPayload(urlInfo);
+        const resultData = extractDataFromHtml(rawHtml, urlInfo);
+        hideStatus();
+        renderResult(resultData);
+      } catch (err) {
+        showStatus(err.message || "미디어 추출 중 오류가 발생했습니다.", true);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
