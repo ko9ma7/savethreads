@@ -1,96 +1,88 @@
 <!-- index.html -->
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaveThreads - Threads 동영상 및 사진 다운로더</title>
+  <title>SaveThreads - 스레드(Threads) 동영상 다운로드</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="navbar">
     <div class="container nav-container">
-      <a href="./" class="logo">SaveThreads</a>
-      <nav class="nav-links">
-        <a href="#how-to">사용 방법</a>
-        <a href="#faq">자주 묻는 질문</a>
+      <a href="./" class="logo">
+        <!-- SaveThreads 로고 아이콘 -->
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c3.78 0 7.07-2.1 8.76-5.23" stroke-linecap="round"/>
+          <path d="M16.5 12c0-2.48-2.02-4.5-4.5-4.5S7.5 9.52 7.5 12s2.02 4.5 4.5 4.5c1.66 0 3.11-.9 3.89-2.25" stroke-linecap="round"/>
+          <path d="M16.5 12v1.5a2.5 2.5 0 0 0 5 0V12a9.5 9.5 0 1 0-3.8 7.6" stroke-linecap="round"/>
+        </svg>
+        <span>SaveThreads</span>
+      </a>
+      <nav class="nav-right">
+        <button type="button" class="icon-btn" title="언어">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </button>
+        <button type="button" id="theme-toggle" class="icon-btn" title="테마 전환">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <a href="./" class="nav-pill active">홈</a>
+        <a href="#how-to" class="nav-link">소개</a>
+        <a href="#faq" class="nav-link">문의</a>
       </nav>
     </div>
   </header>
 
-  <main class="container">
+  <main class="container main-content">
     <section class="hero">
-      <h1>Threads 동영상 및 이미지 다운로드</h1>
-      <p>공개된 Threads 게시물 링크를 붙여넣어 고화질 MP4 동영상과 이미지를 저장하세요.</p>
+      <h1>스레드(Threads)<br>동영상 다운로드</h1>
+      <p class="subtitle">Threads의 이미지와 동영상을 원본 품질로 다운로드하세요</p>
 
-      <form id="download-form" class="search-box">
-        <div class="input-wrapper">
-          <input 
-            type="url" 
-            id="thread-url" 
-            placeholder="https://www.threads.net/@username/post/..." 
-            required 
+      <form id="download-form" class="search-bar">
+        <div class="input-box">
+          <input
+            type="url"
+            id="thread-url"
+            placeholder="https://www.threads.com/@username/post/..."
+            required
             autocomplete="off"
           >
-          <button type="button" id="paste-btn" class="btn-secondary" title="클립보드 붙여넣기">붙여넣기</button>
+          <button type="button" id="clear-btn" class="clear-btn hidden" title="지우기">&times;</button>
         </div>
-        <button type="submit" id="submit-btn" class="btn-primary">다운로드</button>
+        <button type="submit" id="submit-btn" class="download-submit-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>다운로드</span>
+        </button>
       </form>
 
       <div id="status-message" class="status-message hidden"></div>
     </section>
 
-    <section id="result-section" class="result-section hidden">
-      <div class="result-card">
-        <div id="media-preview" class="media-preview"></div>
-        <div class="media-actions">
-          <p id="post-caption" class="post-caption"></p>
-          <div id="download-links" class="download-links"></div>
+    <!-- 1번 이미지와 동일한 결과 출력 레이아웃 -->
+    <section id="result-section" class="result-area hidden">
+      <!-- 작성자 및 본문 카드 -->
+      <div class="author-card">
+        <div class="author-header">
+          <img id="author-avatar" class="author-avatar" src="" alt="avatar">
+          <div class="author-meta">
+            <strong id="author-name" class="author-name"></strong>
+            <span id="author-handle" class="author-handle"></span>
+          </div>
         </div>
+        <p id="post-caption" class="author-caption"></p>
       </div>
-    </section>
 
-    <section id="how-to" class="info-section">
-      <h2>사용 방법</h2>
-      <div class="steps-grid">
-        <div class="step-card">
-          <span class="step-num">1</span>
-          <h3>링크 복사</h3>
-          <p>Threads 앱이나 웹에서 저장하고 싶은 게시물의 공유 버튼을 눌러 링크를 복사합니다.</p>
-        </div>
-        <div class="step-card">
-          <span class="step-num">2</span>
-          <h3>링크 붙여넣기</h3>
-          <p>상단 입력창에 복사한 URL을 붙여넣고 다운로드 버튼을 클릭합니다.</p>
-        </div>
-        <div class="step-card">
-          <span class="step-num">3</span>
-          <h3>파일 저장</h3>
-          <p>추출된 비디오(MP4) 또는 이미지 목록에서 원하는 화질의 저장 버튼을 누릅니다.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq" class="info-section">
-      <h2>자주 묻는 질문</h2>
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary>비공개 계정의 게시물도 다운로드할 수 있나요?</summary>
-          <p>아니요, 전체 공개된 Threads 게시물의 미디어만 추출 및 다운로드할 수 있습니다.</p>
-        </details>
-        <details class="faq-item">
-          <summary>GitHub Pages에서 바로 동영상이 추출되나요?</summary>
-          <p>GitHub Pages는 정적 웹 호스팅만 지원하므로 브라우저의 CORS 정책을 우회하기 위해 Cloudflare Workers 또는 별도의 백엔드 API 엔드포인트를 `script.js`에 연결해야 실제 크롤링이 동작합니다.</p>
-        </details>
-      </div>
+      <!-- 미디어 카드 리스트 -->
+      <div id="media-list" class="media-list"></div>
     </section>
   </main>
-
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2026 SaveThreads Clone. 본 사이트는 Meta 및 Threads와 제휴 관계가 아닙니다.</p>
-    </div>
-  </footer>
 
   <script src="script.js"></script>
 </body>
